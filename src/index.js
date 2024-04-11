@@ -1,6 +1,7 @@
 const baseUrl = "https://api.quotable.io";
 const dbUrl = "http://localhost:3000";
 
+//
 const getQuotes = async (params) => {
   const response = await fetch(`${baseUrl}/quotes/random`, params);
   const data = await response.json();
@@ -55,7 +56,16 @@ const renderQuote = async (quote) => {
 
   const cardBody = document.createElement("div");
   cardBody.classList.add("card-body");
-  cardBody.textContent = quote.content;
+
+  const quoteBody = document.createElement("blockquote");
+  quoteBody.classList.add("blockquote");
+  quoteBody.textContent = quote.content;
+
+  const quoteFooter = document.createElement("h5");
+  quoteFooter.textContent = `- ${quote.author}`;
+
+  cardBody.appendChild(quoteBody);
+  cardBody.appendChild(quoteFooter);
 
   const cardFooter = document.createElement("div");
   cardFooter.classList.add("card-footer");
@@ -99,7 +109,16 @@ const renderLikedQuote = async (quote) => {
 
   const cardBody = document.createElement("div");
   cardBody.classList.add("card-body");
-  cardBody.textContent = quote.content;
+
+  const quoteBody = document.createElement("blockquote");
+  quoteBody.classList.add("blockquote");
+  quoteBody.textContent = quote.content;
+
+  const quoteFooter = document.createElement("h5");
+  quoteFooter.textContent = `- ${quote.author}`;
+
+  cardBody.appendChild(quoteBody);
+  cardBody.appendChild(quoteFooter);
 
   const cardFooter = document.createElement("div");
   cardFooter.classList.add("card-footer");
