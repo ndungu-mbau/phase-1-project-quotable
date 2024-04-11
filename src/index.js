@@ -41,7 +41,6 @@ const getLikedQuotes = async () => {
 };
 
 const renderQuote = async (quote) => {
-  console.log({ quote });
   const list = document.querySelector("#quote-box .list-group");
   while (list.firstChild) {
     list.removeChild(list.firstChild);
@@ -97,7 +96,6 @@ const renderQuote = async (quote) => {
 };
 
 const renderLikedQuote = async (quote) => {
-  console.log({ quote });
   const list = document.querySelector("#liked-quote-box .list-group");
 
   const listElement = document.createElement("li");
