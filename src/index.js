@@ -73,8 +73,13 @@ const renderQuote = async (quote) => {
 
   const likeBtn = document.createElement("button");
   likeBtn.classList.add("btn");
-  likeBtn.classList.add("btn-outline-primary");
-  likeBtn.textContent = "Like Quote";
+  likeBtn.classList.add("btn-link-primary");
+
+  const icon = document.createElement("i");
+  icon.classList.add("ni");
+  icon.classList.add("ni-like-2");
+
+  likeBtn.appendChild(icon);
 
   likeBtn.addEventListener("click", async () => {
     const data = await likeQuote(quote._id);
@@ -126,7 +131,14 @@ const renderLikedQuote = async (quote) => {
   const likeBtn = document.createElement("button");
   likeBtn.classList.add("btn");
   likeBtn.classList.add("btn-outline-danger");
-  likeBtn.textContent = "Unlike Quote";
+
+  likeBtn.classList.add("btn-danger");
+
+  const icon = document.createElement("i");
+  icon.classList.add("ni");
+  icon.classList.add("ni-like-2");
+
+  likeBtn.appendChild(icon);
 
   likeBtn.addEventListener("click", async () => {
     const data = await unlikeQuote(quote._id);
