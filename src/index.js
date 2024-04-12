@@ -2,8 +2,8 @@ const baseUrl = "https://api.quotable.io";
 const dbUrl = "http://localhost:3000";
 
 //
-const getQuotes = async (params) => {
-  const response = await fetch(`${baseUrl}/quotes/random`, params);
+const getQuotes = async (limit = 1) => {
+  const response = await fetch(`${baseUrl}/quotes/random?limit=${limit}`);
   const data = await response.json();
   return data;
 };
@@ -42,9 +42,6 @@ const getLikedQuotes = async () => {
 
 const renderQuote = async (quote) => {
   const list = document.querySelector("#quote-box .list-group");
-  while (list.firstChild) {
-    list.removeChild(list.firstChild);
-  }
 
   const listElement = document.createElement("li");
   listElement.classList.add("list-group-item");
@@ -100,7 +97,7 @@ const renderQuote = async (quote) => {
   list.appendChild(listElement);
 };
 
-const renderLikedQuote = async (quote) => {
+const renderLikedQuote = async ({ id, quote }) => {
   const list = document.querySelector("#liked-quote-box .list-group");
 
   const listElement = document.createElement("li");
@@ -141,10 +138,17 @@ const renderLikedQuote = async (quote) => {
   likeBtn.appendChild(icon);
 
   likeBtn.addEventListener("click", async () => {
-    const data = await unlikeQuote(quote._id);
-    if (data.liked) {
-      const [nextQuote] = await getQuotes();
-      renderQuote(nextQuote);
+    const data = await unlikeQuote(id);
+    if (data.id) {
+      while (list.firstChild) {
+        list.removeChild(list.firstChild);
+      }
+
+      const quotes = await getLikedQuotes();
+      quotes.map(async ({ id, quoteId }) => {
+        const quote = await getSingleQuote(quoteId);
+        renderLikedQuote({ id, quote });
+      });
     } else {
       const [nextQuote] = await getQuotes();
       renderQuote(nextQuote);
@@ -164,14 +168,43 @@ document.addEventListener("DOMContentLoaded", async () => {
   const likedQuotesBtn = document.getElementById("liked-quotes");
   const quoteBox = document.getElementById("quote-box");
   const likedQuotesBox = document.getElementById("liked-quote-box");
+  const listGroup = document.querySelector("#liked-quote-box .list-group");
   const homeBtn = document.getElementById("home");
+  const form = document.getElementById("form");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const input = document.getElementById("quote-input");
+    const val = parseInt(input.value);
+
+    if (val < 1 || val > 50) {
+      input.classList.add("is-invalid");
+    } else {
+      input.classList.remove("is-invalid");
+      const list = document.querySelector("#quote-box .list-group");
+      while (list.firstChild) {
+        list.removeChild(list.firstChild);
+      }
+
+      const quotes = await getQuotes(val);
+      quotes.forEach(renderQuote);
+    }
+  });
 
   const [quote] = await getQuotes();
   await renderQuote(quote);
 
   homeBtn.addEventListener("click", async () => {
     quoteBox.classList.remove("hidden");
+    form.classList.remove("hidden");
+
     likedQuotesBox.classList.add("hidden");
+
+    const list = document.querySelector("#quote-box .list-group");
+    while (list.firstChild) {
+      list.removeChild(list.firstChild);
+    }
 
     const [quote] = await getQuotes();
     await renderQuote(quote);
@@ -183,13 +216,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   likedQuotesBtn.addEventListener("click", async () => {
+    form.classList.add("hidden");
     quoteBox.classList.add("hidden");
+
     likedQuotesBox.classList.remove("hidden");
 
+    while (listGroup.firstChild) {
+      listGroup.removeChild(listGroup.firstChild);
+    }
+
     const quotes = await getLikedQuotes();
-    quotes.map(async ({ quoteId }) => {
+
+    quotes.map(async ({ id, quoteId }) => {
       const quote = await getSingleQuote(quoteId);
-      renderLikedQuote(quote);
+      renderLikedQuote({ id, quote });
     });
   });
 });
